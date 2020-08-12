@@ -40,5 +40,4 @@ class CosmoGribApi(AutotoolsPackage):
             '--disable-jpeg',
         ]
 
-        return args                                   
-
+        return args

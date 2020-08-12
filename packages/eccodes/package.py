@@ -43,9 +43,6 @@ class Eccodes(CMakePackage):
     variant('examples', default=True,
             description='Build the examples (part of the full test suite)')
     variant('test', default=True, description='Enable the tests')
-    variant('build_type', default='RelWithDebInfo',
-            description='The build type to build',
-            values=('Debug', 'Release', 'RelWithDebInfo', 'Production'))
 
     # The building script tries to find an optional package valgrind when
     # tests are enabled but the testing scripts don't use it.
@@ -54,7 +51,7 @@ class Eccodes(CMakePackage):
     depends_on('cmake@3.14.5:%gcc')
     depends_on('netcdf-c', when='+netcdf')
     depends_on('openjpeg@1.5.0:1.5.999,2.1.0:2.1.999', when='jp2k=openjpeg')
-    depends_on('jasper%gcc', when='jp2k=jasper')
+    depends_on('jasper%gcc ~shared', when='jp2k=jasper')
     depends_on('libpng', when='+png')
     depends_on('libaec', when='+aec')
     # Can be built with Python2 or Python3.
@@ -65,6 +62,8 @@ class Eccodes(CMakePackage):
     depends_on('python@2.6:2.999', when='@:2.12+python',
                type=('build', 'link', 'run'))
     depends_on('py-numpy', when='+python', type=('build', 'run'))
+
+    patch('fxtr_parallel_import.patch', when='@2.14.1 +openmp')
     extends('python', when='+python')
 
     conflicts('+openmp', when='+pthreads',
@@ -107,6 +106,9 @@ class Eccodes(CMakePackage):
 
         if self.spec.variants['jp2k'].value == 'openjpeg':
             args.append('-DOPENJPEG_PATH=' + self.spec['openjpeg'].prefix)
+
+        if self.spec.variants['jp2k'].value == 'jasper':
+            args.append('-DJASPER_PATH=' + self.spec['jasper'].prefix)
 
         if '+png' in self.spec:
             args.extend(['-DENABLE_PNG=ON',
