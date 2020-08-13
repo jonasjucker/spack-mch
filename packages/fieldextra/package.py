@@ -23,7 +23,7 @@
 from spack import *
 
 
-class Fieldextra(MakefilePackage):
+class Fieldextra(AutotoolsPackage):
     """Fieldextra is a generic tool to manipulate NWP model data and gridded observations; simple data processing and more complex data operations are supported. Fieldextra is designed as a toolbox; a large set of primitive operations which can be arbitrarily combined are provided."""
 
     homepage = "http://www.cosmo-model.org/content/support/software/default.html"
@@ -36,6 +36,12 @@ class Fieldextra(MakefilePackage):
     
     variant('build_type', default='optimized', description='Build type', values=('debug', 'optimized', 'profiling'))
     variant('openmp', default=True)
+    
+    # autotools dependencies
+    depends_on('m4')
+    depends_on('autoconf%gcc')
+    depends_on('automake%gcc')
+    depends_on('libtool%gcc')
 
     depends_on('libaec@1.0.0 ~build_shared_libs')
     depends_on('jasper@1.900.1 ~shared')
@@ -65,9 +71,17 @@ class Fieldextra(MakefilePackage):
     # profiling
     depends_on('icontools@2.3.6 build_type=debug', when='build_type=debug')
     depends_on('fieldextra-grib1@2.15 build_type=profiling', when='build_type=profiling')
-
+    
+    force_autoreconf = True
     build_directory = 'src'
     
+    def configure_args(self):
+        args = []
+        args.append('--with-grib1={0}'.format(self.spec['fieldextra-grib1'].prefix))
+        args.append('--with-jasper={0}'.format(self.spec['jasper'].prefix))
+        args.append('--with-netcdf={0}'.format(self.spec['netcdf-c'].prefix))
+        return args
+
     @property
     def build_targets(self):
         spec = self.spec
@@ -115,18 +129,6 @@ class Fieldextra(MakefilePackage):
         install_tree('resources', prefix.resources)
 
 
-    @run_after('install')
-    @on_package_attributes(run_tests=True)
-    def test(self):
-        copy_tree(self.spec['eccodes'].prefix +'/bin', self.build_directory + '/../tools')
-        copy_tree(self.spec['netcdf-c'].prefix +'/bin', self.build_directory + '/../tools')
-        copy_tree(self.spec['netcdf-fortran'].prefix +'/bin', self.build_directory + '/../tools')
-        with working_dir('cookbook'):
-            run_cmd = './run.bash'
-            if self.compiler.name == 'gcc':
-                run_cmd += ' -c gnu'
-            else:
-                run_cmd +=  ' -c ' + self.compiler.name
-            run_cmd += ' -m opt_omp'
-            run_test = Executable(run_cmd)
-            run_test()
+    #@run_after('install')
+    #@on_package_attributes(run_tests=True)
+    #def test(self):
