@@ -55,7 +55,6 @@ packages:
             cray-libsci@20.06.1%gcc:   cray-libsci
             cray-libsci@20.06.1%intel: cray-libsci
             cray-libsci@20.06.1%cce:   cray-libsci
-            cray-libsci@20.06.1%pgi:   cray-libsci
         paths:
             cray-libsci@20.06.1%cce: /opt/cray/pe/libsci/20.06.1/CRAYCLANG/9.0/x86_64
 
@@ -65,7 +64,6 @@ packages:
             cray-libsci_acc@20.06.1%gcc:   cray-libsci_acc/20.06.1
             cray-libsci_acc@20.06.1%intel: cray-libsci_acc/20.06.1
             cray-libsci_acc@20.06.1%cce:   cray-libsci_acc/20.06.1
-            cray-libsci_acc@20.06.1%pgi:   cray-libsci_acc/20.06.1
     cuda:
         modules:
           cuda@10.2%gcc: cudatoolkit/10.2.89_3.29-7.0.2.1_3.5__g67354b4
