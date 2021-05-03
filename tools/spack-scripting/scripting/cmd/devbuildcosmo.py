@@ -124,6 +124,7 @@ def devbuildcosmo(self, args):
         # set F90 to prevent abort defined in Makefile
         os.environ["F90"] = "NOTSET"
         subprocess.run(["make", "clean"], cwd=source_path + "/cosmo/ACC")
+        os.environ.pop("F90")
 
         if os.path.exists(source_path + "/spack-build"):
             print("\033[92m" + "==> " + "\033[0m" + "dycore: Cleaning build directory")
