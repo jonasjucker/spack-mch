@@ -120,15 +120,10 @@ def devbuildcosmo(self, args):
     # Clean if needed
     if args.clean_build:
         print("\033[92m" + "==> " + "\033[0m" + "cosmo: Cleaning build directory")
-        files_to_clean = []
 
-        # make clean, but without make command
-        files_to_clean.extend(glob.glob(source_path + "/cosmo/ACC/.depend*"))
-        files_to_clean.extend(glob.glob(source_path + "/cosmo/ACC/obj/*"))
-        files_to_clean.extend(glob.glob(source_path + "/cosmo/ACC/claw/*"))
-        for file in files_to_clean:
-            if os.path.isfile(file):
-                os.remove(file)
+        # set F90 to prevent abort defined in Makefile
+        os.environ["F90"] = "NOTSET"
+        subprocess.run(["make", "clean"], cwd=source_path + "/cosmo/ACC")
 
         if os.path.exists(source_path + "/spack-build"):
             print("\033[92m" + "==> " + "\033[0m" + "dycore: Cleaning build directory")
